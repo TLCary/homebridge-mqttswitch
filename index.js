@@ -15,6 +15,11 @@
 // 			  },
 //			  "onValue": "OPTIONALLY PUT THE VALUE THAT MEANS ON HERE (DEFAULT true)",
 //			  "offValue": "OPTIONALLY PUT THE VALUE THAT MEANS OFF HERE (DEFAULT false)",
+//			  "onStatus": "OPTIONALLY PUT THE VALUE DEVICE RETURNS WHEN STATUS IS ON (DEFAULT true)",
+//  Sonoff-MQTT-OTA commands the switch with lower case "on" and "off" but returns the status of the switch with upper case
+//			  "onValue": "on",
+//			  "offValue": "off",
+//			  "onStatus": "ON",
 //			  "integerValue": "OPTIONALLY SET THIS TRUE TO USE 1/0 AS VALUES",
 //     }
 // ],
@@ -59,6 +64,7 @@ function MqttSwitchAccessory(log, config) {
 	this.topicStatusSet	= config["topics"].statusSet;
     this.onValue = (config["onValue"] !== undefined) ? config["onValue"]: "true";
     this.offValue = (config["offValue"] !== undefined) ? config["offValue"]: "false";
+    this.onStatus = (config["onStatus"] !== undefined) ? config["onStatus"]: "true";
 	if (config["integerValue"]) {
 		this.onValue = "1";
 		this.offValue = "0";
@@ -82,7 +88,7 @@ function MqttSwitchAccessory(log, config) {
 	this.client.on('message', function (topic, message) {
 		if (topic == that.topicStatusGet) {
 			var status = message.toString();
-			that.switchStatus = (status == that.onValue) ? true : false;
+			that.switchStatus = (status == that.onStatus) ? true : false;
 		   	that.service.getCharacteristic(Characteristic.On).setValue(that.switchStatus, undefined, 'fromSetValue');
 		}
 	});
